@@ -161,6 +161,18 @@ sudo ./setup.sh --validate-config
 sudo ./ids_monitor.sh --test-config
 ```
 
+### Step 4: Configure Email Notifications (Optional)
+```bash
+# Set up email notifications
+sudo ./setup_email.sh --configure
+
+# Test email configuration
+sudo ./setup_email.sh --test
+
+# Check email status
+sudo ./setup_email.sh --status
+```
+
 ---
 
 ## 🏁 **Starting the IDS**
@@ -206,6 +218,11 @@ sudo ./ids_monitor.sh --restart
 
 # Show help
 sudo ./ids_monitor.sh --help
+
+# Email management
+sudo ./ids_monitor.sh --email-config    # Configure email alerts
+sudo ./ids_monitor.sh --email-test      # Test email configuration
+sudo ./ids_monitor.sh --email-status    # Show email status
 ```
 
 ---
@@ -379,6 +396,55 @@ EOF
 chmod +x stress_test.sh
 sudo ./stress_test.sh
 ```
+
+---
+
+## 📧 **Email Notifications**
+
+### Gmail Setup Requirements
+```bash
+# Before configuring email alerts, ensure you have:
+# 1. Gmail account with 2-Step Verification enabled
+# 2. App Password generated for 'Mail' application
+# 3. Internet connection for SMTP access
+```
+
+### Email Configuration
+```bash
+# Configure email notifications
+sudo ./setup_email.sh --configure
+
+# This will prompt you for:
+# - Gmail address
+# - Gmail App Password (not regular password)
+# - Recipient email address
+# - CC email address (optional)
+# - Alert types to email
+# - Email frequency
+```
+
+### Email Testing
+```bash
+# Test email configuration
+sudo ./setup_email.sh --test
+
+# Check email status
+sudo ./setup_email.sh --status
+
+# View email logs
+tail -f logs/email.log
+```
+
+### Email Alert Types
+- **Port Scan Alerts**: When port scanning is detected
+- **ARP Spoof Alerts**: When ARP spoofing is detected  
+- **SSH Brute Force Alerts**: When SSH attacks are detected
+- **USB Alerts**: When USB devices are inserted/removed
+
+### Email Templates
+- **Simple**: Basic alert information
+- **Detailed**: Includes system information and recent alerts
+- **HTML**: Formatted HTML email with tables
 
 ---
 

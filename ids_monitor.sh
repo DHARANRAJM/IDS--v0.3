@@ -29,6 +29,7 @@ ENABLED_MODULES="arp_spoof,port_scan,ssh_brute,usb_detect"
 CHECK_INTERVAL=5
 VERBOSE=false
 DAEMON_MODE=false
+ENABLE_EMAIL_ALERTS=false
 
 # Function to print colored output
 print_status() {
@@ -50,6 +51,22 @@ print_status() {
             echo -e "${RED}[ALERT]${NC} $timestamp: $message" | tee -a "$ALERT_LOG"
             ;;
     esac
+}
+
+# Function to send email alert
+send_email_alert() {
+    local alert_type="$1"
+    local source_ip="$2"
+    local details="$3"
+    local priority="$4"
+    
+    if [[ "$ENABLE_EMAIL_ALERTS" == "true" ]]; then
+        local email_module="$MODULES_DIR/email_notifier.sh"
+        if [[ -f "$email_module" && -x "$email_module" ]]; then
+            local alert_message="$source_ip: $details"
+            "$email_module" --send "$alert_type" "$alert_message" "$priority" &
+        fi
+    fi
 }
 
 # Function to check if running as root
@@ -117,6 +134,15 @@ load_config() {
         source "$CONFIG_DIR/thresholds.conf"
     fi
     
+    # Load email configuration if available
+    if [[ -f "$CONFIG_DIR/email_config.conf" ]]; then
+        source "$CONFIG_DIR/email_config.conf"
+        if [[ "$SEND_EMAIL_ALERTS" == "true" ]]; then
+            ENABLE_EMAIL_ALERTS=true
+            print_status "INFO" "Email alerts enabled"
+        fi
+    fi
+    
     print_status "INFO" "Configuration loaded"
 }
 
@@ -153,6 +179,13 @@ run_module() {
         if output=$("$module_path" 2>&1); then
             if [[ -n "$output" ]]; then
                 print_status "ALERT" "[$module] $output"
+                
+                # Send email alert if enabled
+                if [[ "$ENABLE_EMAIL_ALERTS" == "true" ]]; then
+                    # Parse alert type from module name
+                    local alert_type=$(echo "$module" | tr '[:lower:]' '[:upper:]' | sed 's/_/ /g')
+                    send_email_alert "$alert_type" "N/A" "$output" "MEDIUM"
+                fi
             fi
         else
             print_status "ERROR" "Module $module failed: $output"
@@ -219,6 +252,9 @@ Options:
     -i, --interval SECONDS  Set check interval (default: 5)
     --status                Show current status
     --stop                  Stop the daemon
+    --email-config          Configure email notifications
+    --email-test            Test email configuration
+    --email-status          Show email status
 
 Modules:
     arp_spoof              ARP spoofing detection
@@ -361,6 +397,30 @@ while [[ $# -gt 0 ]]; do
             ;;
         --stop)
             stop_daemon
+            exit 0
+            ;;
+        --email-config)
+            if [[ -f "$MODULES_DIR/email_notifier.sh" ]]; then
+                "$MODULES_DIR/email_notifier.sh" --configure
+            else
+                print_status "ERROR" "Email notifier module not found"
+            fi
+            exit 0
+            ;;
+        --email-test)
+            if [[ -f "$MODULES_DIR/email_notifier.sh" ]]; then
+                "$MODULES_DIR/email_notifier.sh" --test
+            else
+                print_status "ERROR" "Email notifier module not found"
+            fi
+            exit 0
+            ;;
+        --email-status)
+            if [[ -f "$MODULES_DIR/email_notifier.sh" ]]; then
+                "$MODULES_DIR/email_notifier.sh" --status
+            else
+                print_status "ERROR" "Email notifier module not found"
+            fi
             exit 0
             ;;
         *)
