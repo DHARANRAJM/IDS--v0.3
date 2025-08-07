@@ -1,0 +1,13 @@
+# Trusted MAC addresses (one per line)
+# Format: xx:xx:xx:xx:xx:xx
+# Example: 00:11:22:33:44:55
+
+# Add your trusted MAC addresses below
+# These devices will not trigger ARP spoofing alerts
+
+# Example trusted devices (replace with your actual trusted MACs)
+# 00:11:22:33:44:55
+# aa:bb:cc:dd:ee:ff
+# 12:34:56:78:9a:bc
+
+# Note: Comment out or remove any MAC addresses you don't want to whitelist
