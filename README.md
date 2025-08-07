@@ -56,7 +56,7 @@ This IDS monitors network traffic in real-time to detect various types of attack
 ### Quick Start
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/DHARANRAJM/IDS--v0.3.git
 cd IDS
 
 # Make scripts executable
