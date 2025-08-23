@@ -1,4 +1,7 @@
 # Network-Based Intrusion Detection System (IDS)
+**👨‍💻 Author: M DHARAN RAJ -- Web Developer ----- CISCO Trained & CISCO Certified Ethical Hacker----- 🔒**
+
+🌐 **Web Developer** | 🔐 **CISCO Certified** | ⚡ **Ethical Hacker** | 
 
 A lightweight, shell-based Intrusion Detection System designed for real-time network monitoring and threat detection. This project demonstrates how simple shell scripting can be used to create an effective IDS that's resource-friendly and highly customizable.
 
